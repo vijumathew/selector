@@ -1,0 +1,21 @@
+{:require [background.background
+           content-script.content-script
+           popup.popup]
+ :optimizations :simple
+ :compiler-options {:optimizations :simple
+                    :output-dir "public"
+                    :modules {:cljs-base
+                              {:output-to "public/base.js"}
+                              :background
+                              {:output-to "background.js"
+                               :entries #{"background.background"}}
+                              :content-script
+                              {:output-to "content-script.js"
+                               :entries #{"content-script.content-script"}}
+                              :popup
+                              {:output-to "popup.js"
+                               :entries #{"popup.popup"}}}}}
+
+
+;; add an asset path so output files are in one place
+;; possible to control where source maps go?

@@ -1,0 +1,32 @@
+{
+    "manifest_version": 2,
+
+    "name": "Getting started example",
+    "description": "shows a Google Image search result for the current page",
+    "version": "1.0",
+    "background": {
+        "page": "background.html",
+        "persistent": false
+    },
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
+    },
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content_script/content_script.js"
+            ],
+            "run_at": "document_end"
+        }
+    ],
+    "permissions": [
+        "activeTab",
+        "https://ajax.googleapis.com/",
+        "storage"
+    ]
+}
