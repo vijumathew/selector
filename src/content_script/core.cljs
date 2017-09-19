@@ -1,9 +1,10 @@
 (ns content-script.core
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
-  (:require [cljs.core.async :refer [<!]]
+  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
+  (:require [cljs.core.async :refer [<! chan]]
             [chromex.logging :refer-macros [log info warn error group group-end]]
             [chromex.protocols :refer [post-message!]]
-            [chromex.ext.runtime :as runtime :refer-macros [connect]]))
+            [chromex.ext.runtime :as runtime :refer-macros [connect send-message]]
+            [util.selection :as util]))
 
 ; -- a message loop ---------------------------------------------------------------------------------------------------------
 
@@ -34,7 +35,35 @@
     (run-message-loop! background-port)
     (do-page-analysis! background-port)))
 
-; -- main entry point -------------------------------------------------------------------------------------------------------
+;; -- main entry point -------------------------------------------------------------------------------------------------------
+;; structure is [key isCtrl?]
+(def keybinding (atom nil))
+
+(defn update-key! [new-binding]
+  (reset! keybinding new-binding))
+
+(def key-chan (chan 20))
+
+(defn key-handler [e]
+  (let [letter (.-key e)
+        ctrl (.-ctrlKey e)]
+    (cljs.core.async/put! key-chan [letter ctrl])))
+
+(defn process-key [e]
+  (print e)
+  (when (= e @keybinding)
+    (util/expand-current-selection)
+    (print "MATCH")))
+
+(def key-loop
+  (go-loop []
+    (when-some [message (<! key-chan)]
+      (process-key message)
+      (recur))
+    (print "done")))
+
+(.addEventListener js/document "keyup" key-handler)
+;; (.removeEventListener js/document "keyup" key-handler)
 
 (defn init! []
   (log "CONTENT SCRIPT: init")
