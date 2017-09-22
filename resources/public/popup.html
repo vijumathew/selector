@@ -9,15 +9,12 @@
     <title>Getting Started Extension's Popup</title>
     <style>
       body {
-        font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
-        font-size: 100%;
+          font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+          font-size: 100%;
       }
-      #status {
-        /* avoid an excessively wide status text */
-        white-space: pre;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        max-width: 400px;
+      button {
+          font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
+          font-size: 13px;
       }
     </style>
 
@@ -31,8 +28,22 @@
     <script src="popup/popup.js"></script>
   </head>
   <body>
-    <div id="status"></div>
-    <img id="image-result" hidden>
+    <h2>Set keybindings</h2>
+    <table>
+      <tr>
+        <th>Command</th>
+        <th>Key</th>
+        <th>Ctrl?</th>
+      </tr>
+      <tr>
+        <td>Expand parent</td>
+        <td><input type="text"/></td>
+        <td><input type="checkbox"/></td>
+      </tr>
+    </table>
+    <br/>
+    <!-- MAKE clicking this send the data to background page -->
+    <button id="submit-btn">Save</button>
   </body>
 </html>
 

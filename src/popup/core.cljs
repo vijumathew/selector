@@ -28,3 +28,27 @@
 (defn init! []
   (log "POPUP: init")
   (connect-to-background-page!))
+
+(defn set-keybinding [row-num letter ctrl]
+  (let [table-row (aget (.querySelectorAll js/document "tr") (inc row-num))
+        row-elements (.querySelectorAll table-row "input")
+        letter-elem (aget row-elements 0)
+        ctrl-elem (aget row-elements 1)]
+    (aset letter-elem "value" letter)
+    (aset ctrl-elem "checked" ctrl)))
+
+;; send message directly to content script
+(defn get-keybinding [row-num]
+  (let [table-row (aget (.querySelectorAll js/document "tr") (inc row-num))
+        row-elements (.querySelectorAll table-row "input")
+        letter (.-value (aget row-elements 0))
+        checked (.-checked (aget row-elements 1))]
+    (vector letter checked)))
+
+(defn on-btn-click []
+  (print (get-keybinding 0))
+  (.log js/console "sup"))
+
+(.addEventListener (.getElementById js/document "submit-btn") "click" on-btn-click)
+;; (.removeEventListener (.getElementById js/document "submit-btn") "click" on-btn-click)
+
