@@ -4,6 +4,7 @@
  :optimizations :simple
  :compiler-options {:optimizations :simple
                     :output-dir "public"
+                    :closure-output-charset "US-ASCII"
                     :modules {:cljs-base
                               {:output-to "public/base.js"}
                               :background

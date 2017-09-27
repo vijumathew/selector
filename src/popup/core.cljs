@@ -33,7 +33,6 @@
     (aset letter-elem "value" letter)
     (aset ctrl-elem "checked" ctrl)))
 
-;; send message directly to content script
 (defn get-and-set-data-from-storage []
   (storage/put-data-in-callback
    (fn [data]
@@ -55,14 +54,14 @@
     (print (str letter " " ctrl)))
   (.log js/console "sup"))
 
-;; implement listener for updating the keybinding in popup
-;; and then copy this to content script
-;; and that should be it....
+(defn add-on-click []
+  (.addEventListener (.getElementById js/document "submit-btn")
+                     "click" on-btn-click))
 
 (defn init! []
   (log "POPUP: init")
   ;;(connect-to-background-page!)
-  (.addEventListener (.getElementById js/document "submit-btn") "click" on-btn-click)
+  (.addEventListener js/window "load" add-on-click)
   (get-and-set-data-from-storage))
 
 ;;
