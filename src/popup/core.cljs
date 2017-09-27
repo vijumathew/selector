@@ -6,25 +6,6 @@
             [chromex.ext.runtime :as runtime :refer-macros [connect]]
             [util.storage :as storage]))
 
-; -- a message loop ---------------------------------------------------------------------------------------------------------
-(comment
-  (defn process-message! [message]
-    (log "POPUP: got message:" message))
-
-  (defn run-message-loop! [message-channel]
-    (log "POPUP: starting message loop...")
-    (go-loop []
-      (when-some [message (<! message-channel)]
-        (process-message! message)
-        (recur))
-      (log "POPUP: leaving message loop")))
-
-  (defn connect-to-background-page! []
-    (let [background-port (runtime/connect)]
-      (post-message! background-port "hello from POPUP!")
-      (run-message-loop! background-port))))
-
-;; my popup
 (defn set-keybinding [row-num letter ctrl]
   (let [table-row (aget (.querySelectorAll js/document "tr") (inc row-num))
         row-elements (.querySelectorAll table-row "input")
@@ -60,10 +41,8 @@
 
 (defn init! []
   (log "POPUP: init")
-  ;;(connect-to-background-page!)
   (.addEventListener js/window "load" add-on-click)
   (get-and-set-data-from-storage))
 
-;;
 ;; (.removeEventListener (.getElementById js/document "submit-btn") "click" on-btn-click)
 

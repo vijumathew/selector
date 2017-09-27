@@ -7,9 +7,6 @@
                     :closure-output-charset "US-ASCII"
                     :modules {:cljs-base
                               {:output-to "public/base.js"}
-                              :background
-                              {:output-to "background.js"
-                               :entries #{"background.background"}}
                               :content-script
                               {:output-to "content-script.js"
                                :entries #{"content-script.content-script"}}

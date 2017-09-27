@@ -7,37 +7,6 @@
             [util.selection :as util]
             [util.storage :as storage]))
 
-; -- a message loop ---------------------------------------------------------------------------------------------------------
-(comment
-  (defn process-message! [message]
-    (log "CONTENT SCRIPT: got message:" message))
-
-  (defn run-message-loop! [message-channel]
-    (log "CONTENT SCRIPT: starting message loop...")
-    (go-loop []
-      (when-some [message (<! message-channel)]
-        (process-message! message)
-        (recur))
-      (log "CONTENT SCRIPT: leaving message loop"))))
-
-; -- a simple page analysis  ------------------------------------------------------------------------------------------------
-
-(comment
-  (defn do-page-analysis! [background-port]
-    (let [script-elements (.getElementsByTagName js/document "script")
-          script-count (.-length script-elements)
-          title (.-title js/document)
-          msg (str "CONTENT SCRIPT: document '" title "' contains " script-count " script tags.")]
-      (log msg)
-      (post-message! background-port msg)))
-
-  (defn connect-to-background-page! []
-    (let [background-port (runtime/connect)]
-      (post-message! background-port "hello from CONTENT SCRIPT!")
-      (run-message-loop! background-port)
-      (do-page-analysis! background-port))))
-
-;; -- main entry point -------------------------------------------------------------------------------------------------------
 ;; structure is [key isCtrl?]
 (def keybinding (atom nil))
 
@@ -65,8 +34,6 @@
       (recur))
     (print "done")))
 
-;; (.removeEventListener js/document "keyup" key-handler)
-
 (def update-binding-channel (chan 20))
 
 (def d (atom nil))
@@ -91,23 +58,6 @@
   (enable-console-print!)
   (log "CONTENT SCRIPT: init")
   (.addEventListener js/document "keyup" key-handler)
-  (reset! listener-loop (setup-listener))
-  ;;  (init-connection!)
-  )
+  (reset! listener-loop (setup-listener)))
 
-(comment
-  (defn init-connection! []
-    (let [background-port (runtime/connect)]
-      (post-message! background-port "script-init")
-      (run-message-loop! background-port)))
-
-  (defn process-message! [message]
-    (log "CONTENT SCRIPT: got message:" message))
-
-  (defn run-message-loop! [message-channel]
-    (log "CONTENT SCRIPT: starting message loop...")
-    (go-loop []
-      (when-some [message (<! message-channel)]
-        (process-message! message)
-        (recur))
-      (log "CONTENT SCRIPT: leaving message loop"))))
+;; (.removeEventListener js/document "keyup" key-handler)
