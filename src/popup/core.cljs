@@ -1,32 +1,30 @@
 (ns popup.core
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
-  (:require [cljs.core.async :refer [<!]]
+  (:require-macros [cljs.core.async.macros :refer [go-loop go]])
+  (:require [cljs.core.async :refer [<!] :as async]
             [chromex.logging :refer-macros [log info warn error group group-end]]
             [chromex.protocols :refer [post-message!]]
             [chromex.ext.runtime :as runtime :refer-macros [connect]]
             [util.storage :as storage]))
 
 ; -- a message loop ---------------------------------------------------------------------------------------------------------
+(comment
+  (defn process-message! [message]
+    (log "POPUP: got message:" message))
 
-(defn process-message! [message]
-  (log "POPUP: got message:" message))
+  (defn run-message-loop! [message-channel]
+    (log "POPUP: starting message loop...")
+    (go-loop []
+      (when-some [message (<! message-channel)]
+        (process-message! message)
+        (recur))
+      (log "POPUP: leaving message loop")))
 
-(defn run-message-loop! [message-channel]
-  (log "POPUP: starting message loop...")
-  (go-loop []
-    (when-some [message (<! message-channel)]
-      (process-message! message)
-      (recur))
-    (log "POPUP: leaving message loop")))
+  (defn connect-to-background-page! []
+    (let [background-port (runtime/connect)]
+      (post-message! background-port "hello from POPUP!")
+      (run-message-loop! background-port))))
 
-(defn connect-to-background-page! []
-  (let [background-port (runtime/connect)]
-    (post-message! background-port "hello from POPUP!")
-    (run-message-loop! background-port)))
-
-; -- main entry point -------------------------------------------------------------------------------------------------------
-
-
+;; my popup
 (defn set-keybinding [row-num letter ctrl]
   (let [table-row (aget (.querySelectorAll js/document "tr") (inc row-num))
         row-elements (.querySelectorAll table-row "input")
