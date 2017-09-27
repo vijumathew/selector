@@ -1,5 +1,4 @@
-{:require [background.background
-           content-script.content-script
+{:require [content-script.content-script
            popup.popup]
  :optimizations :simple
  :compiler-options {:optimizations :simple

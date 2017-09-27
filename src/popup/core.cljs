@@ -35,14 +35,14 @@
     (print (str letter " " ctrl)))
   (.log js/console "sup"))
 
-(defn add-on-click []
+(defn dom-ready []
   (.addEventListener (.getElementById js/document "submit-btn")
-                     "click" on-btn-click))
+                     "click" on-btn-click)
+  (get-and-set-data-from-storage))
 
 (defn init! []
   (log "POPUP: init")
-  (.addEventListener js/window "load" add-on-click)
-  (get-and-set-data-from-storage))
+  (.addEventListener js/window "load" dom-ready))
 
 ;; (.removeEventListener (.getElementById js/document "submit-btn") "click" on-btn-click)
 
