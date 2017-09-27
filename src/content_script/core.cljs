@@ -8,10 +8,12 @@
             [util.storage :as storage]))
 
 ;; structure is [key isCtrl?]
-(def keybinding (atom nil))
+(def keybinding (atom [nil nil]))
 
-(defn update-key! [new-binding]
-  (reset! keybinding new-binding))
+(defn update-key! [letter ctrl]
+  (swap! keybinding #(mapv (fn [old new]
+                             (if (nil? new) old new)) %1 %2)
+         [letter ctrl]))
 
 (def key-chan (chan 20))
 
@@ -49,7 +51,7 @@
           is-ctrl (get-new-data "expand-parent-is-ctrl" data)
           letter (get-new-data "expand-parent-letter" data)]
       (reset! d data)
-      (update-key! [letter is-ctrl])
+      (update-key! letter is-ctrl)
       (recur))))
 
 (def listener-loop (atom nil))
