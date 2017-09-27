@@ -14,7 +14,7 @@
 (defn update-data! [data]
   (set local-storage (clj->js data)))
 
-(defn update-expand-parent [letter is-ctrl?]
+(defn update-expand-parent! [letter is-ctrl?]
   (update-data! {"expand-parent-letter" letter
                 "expand-parent-is-ctrl" is-ctrl?}))
 
@@ -22,7 +22,15 @@
 (defn add-events-to-channel! [channel]
   (storage/tap-on-changed-events channel))
 
-
+(defn put-data-in-callback [callback]
+  (go
+    (let [[[bindings] error] (<! (get local-storage (clj->js ["expand-parent-letter"
+                                                              "expand-parent-is-ctrl"])))]
+      (let [new-data (if error
+                       (str "error! " (js->clj error))
+                       (js->clj bindings))]
+        (callback new-data))))
+  nil)
 
 (comment 
   (defn test-storage! []

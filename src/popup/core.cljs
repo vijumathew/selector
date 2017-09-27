@@ -3,7 +3,8 @@
   (:require [cljs.core.async :refer [<!]]
             [chromex.logging :refer-macros [log info warn error group group-end]]
             [chromex.protocols :refer [post-message!]]
-            [chromex.ext.runtime :as runtime :refer-macros [connect]]))
+            [chromex.ext.runtime :as runtime :refer-macros [connect]]
+            [util.storage :as storage]))
 
 ; -- a message loop ---------------------------------------------------------------------------------------------------------
 
@@ -25,9 +26,6 @@
 
 ; -- main entry point -------------------------------------------------------------------------------------------------------
 
-(defn init! []
-  (log "POPUP: init")
-  (connect-to-background-page!))
 
 (defn set-keybinding [row-num letter ctrl]
   (let [table-row (aget (.querySelectorAll js/document "tr") (inc row-num))
@@ -38,6 +36,13 @@
     (aset ctrl-elem "checked" ctrl)))
 
 ;; send message directly to content script
+(defn get-and-set-data-from-storage []
+  (storage/put-data-in-callback
+   (fn [data]
+     (let [ctrl (data "expand-parent-is-ctrl")
+           letter (data "expand-parent-letter")]
+       (set-keybinding 0 letter ctrl)))))
+
 (defn get-keybinding [row-num]
   (let [table-row (aget (.querySelectorAll js/document "tr") (inc row-num))
         row-elements (.querySelectorAll table-row "input")
@@ -46,9 +51,22 @@
     (vector letter checked)))
 
 (defn on-btn-click []
-  (print (get-keybinding 0))
+  (let [[letter ctrl] (get-keybinding 0)]
+    (storage/update-expand-parent! letter ctrl)
+    (.log js/console (str letter " " ctrl))
+    (print (str letter " " ctrl)))
   (.log js/console "sup"))
 
-(.addEventListener (.getElementById js/document "submit-btn") "click" on-btn-click)
+;; implement listener for updating the keybinding in popup
+;; and then copy this to content script
+;; and that should be it....
+
+(defn init! []
+  (log "POPUP: init")
+  ;;(connect-to-background-page!)
+  (.addEventListener (.getElementById js/document "submit-btn") "click" on-btn-click)
+  (get-and-set-data-from-storage))
+
+;;
 ;; (.removeEventListener (.getElementById js/document "submit-btn") "click" on-btn-click)
 
