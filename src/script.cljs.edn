@@ -1,0 +1,4 @@
+{:require [content-script.content-script]
+ :optimizations :simple
+ :compiler-options {:optimizations :simple
+                    :closure-output-charset "US-ASCII"}}

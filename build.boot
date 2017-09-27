@@ -27,9 +27,13 @@
   (comp
    (watch)
    (cljs-repl-env :port 58491)
-   (cljs :ids #{"public"})
+   (cljs :ids #{"popup"})
+   (cljs :ids #{"script"})
    (target)))
 
 ;; (serve :port 8000)
 ;; (reload)
 ;; (cljs-repl-env)
+
+;; (def p (future (boot (run))))
+;; (start-repl)

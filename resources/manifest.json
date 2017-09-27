@@ -15,8 +15,7 @@
                 "<all_urls>"
             ],
             "js": [
-                "base.js",
-                "content_script/content_script.js"
+                "script.js"
             ],
             "run_at": "document_end"
         }
