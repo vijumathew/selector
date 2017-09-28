@@ -15,6 +15,13 @@
                              (if (nil? new) old new)) %1 %2)
          [letter ctrl]))
 
+(defn init-keybinding! []
+  (storage/put-data-in-callback
+   (fn [data]
+     (let [ctrl (data "expand-parent-is-ctrl")
+           letter (data "expand-parent-letter")]
+       (update-key! letter ctrl)))))
+
 (def key-chan (chan 20))
 
 (defn key-handler [e]
@@ -59,6 +66,7 @@
 (defn init! []
   (enable-console-print!)
   (log "CONTENT SCRIPT: init")
+  (init-keybinding!)
   (.addEventListener js/document "keyup" key-handler)
   (reset! listener-loop (setup-listener)))
 
