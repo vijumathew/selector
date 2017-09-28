@@ -1,9 +1,6 @@
 (ns popup.core
   (:require-macros [cljs.core.async.macros :refer [go-loop go]])
   (:require [cljs.core.async :refer [<!] :as async]
-            [chromex.logging :refer-macros [log info warn error group group-end]]
-            [chromex.protocols :refer [post-message!]]
-            [chromex.ext.runtime :as runtime :refer-macros [connect]]
             [util.storage :as storage]))
 
 (defn set-keybinding [row-num letter ctrl]
@@ -30,10 +27,7 @@
 
 (defn on-btn-click []
   (let [[letter ctrl] (get-keybinding 0)]
-    (storage/update-expand-parent! letter ctrl)
-    (.log js/console (str letter " " ctrl))
-    (print (str letter " " ctrl)))
-  (.log js/console "sup"))
+    (storage/update-expand-parent! letter ctrl)))
 
 (defn dom-ready []
   (.addEventListener (.getElementById js/document "submit-btn")
@@ -41,7 +35,6 @@
   (get-and-set-data-from-storage))
 
 (defn init! []
-  (log "POPUP: init")
   (.addEventListener js/window "load" dom-ready))
 
 ;; (.removeEventListener (.getElementById js/document "submit-btn") "click" on-btn-click)

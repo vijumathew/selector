@@ -1,9 +1,7 @@
 (ns content-script.core
   (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [cljs.core.async :refer [<! chan]]
-            [chromex.logging :refer-macros [log info warn error group group-end]]
             [chromex.protocols :refer [post-message!]]
-            [chromex.ext.runtime :as runtime :refer-macros [connect send-message]]
             [util.selection :as util]
             [util.storage :as storage]))
 
@@ -30,22 +28,16 @@
     (cljs.core.async/put! key-chan [letter ctrl])))
 
 (defn process-key [e]
-  (print e)
-  (.log js/console @keybinding)
   (when (= e @keybinding)
-    (util/expand-current-selection)
-    (print "MATCH")))
+    (util/expand-current-selection)))
 
 (def key-loop
   (go-loop []
     (when-some [message (<! key-chan)]
       (process-key message)
-      (recur))
-    (print "done")))
+      (recur))))
 
 (def update-binding-channel (chan 20))
-
-(def d (atom nil))
 
 (defn get-new-data [key pairs]
   (get (pairs key) "newValue"))
@@ -57,7 +49,6 @@
           data (js->clj changes)
           is-ctrl (get-new-data "expand-parent-is-ctrl" data)
           letter (get-new-data "expand-parent-letter" data)]
-      (reset! d data)
       (update-key! letter is-ctrl)
       (recur))))
 
@@ -65,7 +56,6 @@
 
 (defn init! []
   (enable-console-print!)
-  (log "CONTENT SCRIPT: init")
   (init-keybinding!)
   (.addEventListener js/document "keyup" key-handler)
   (reset! listener-loop (setup-listener)))
