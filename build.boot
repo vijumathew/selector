@@ -19,16 +19,20 @@
  '[adzerk.boot-reload    :refer [reload]]
  '[pandeiro.boot-http    :refer [serve]])
 
+(deftask cljs-build []
+  (comp
+   (cljs :ids #{"popup" "script"})
+   (target)))
+
 (deftask production []
   (task-options! cljs {:optimizations :advanced})
-  identity)
+  (cljs-build))
 
 (deftask run []
   (comp
    (watch)
    (cljs-repl-env :port 58491 :ids #{"popup"})
-   (cljs :ids #{"popup" "script"})
-   (target)))
+   (cljs-build)))
 
 ;; (serve :port 8000)
 ;; (reload)
