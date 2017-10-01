@@ -26,9 +26,8 @@
 (deftask run []
   (comp
    (watch)
-   (cljs-repl-env :port 58491)
-   (cljs :ids #{"popup"})
-   (cljs :ids #{"script"})
+   (cljs-repl-env :port 58491 :ids #{"popup"})
+   (cljs :ids #{"popup" "script"})
    (target)))
 
 ;; (serve :port 8000)
